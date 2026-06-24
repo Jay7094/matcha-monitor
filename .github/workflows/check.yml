@@ -1,0 +1,24 @@
+name: 抹茶補貨監控
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'   # 每 30 分鐘執行一次
+  workflow_dispatch:           # 也可以手動觸發（方便測試）
+
+jobs:
+  check-stock:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 下載腳本
+        uses: actions/checkout@v4
+
+      - name: 安裝 Python 套件
+        run: pip install requests beautifulsoup4
+
+      - name: 執行補貨檢查
+        env:
+          GMAIL_USER:     ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASS: ${{ secrets.GMAIL_APP_PASS }}
+          NOTIFY_EMAILS:  ${{ secrets.NOTIFY_EMAILS }}
+        run: python matcha_checker.py
