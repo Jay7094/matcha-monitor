@@ -2,8 +2,8 @@ name: Fetch Crypto Prices
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # 每 15 分鐘執行
-  workflow_dispatch:          # 可手動觸發
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
 
 jobs:
   fetch-prices:
@@ -15,30 +15,34 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Fetch prices from Binance
+      - name: Fetch prices from CoinGecko
         run: |
-          BTC=$(curl -s "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['price'])")
-          ETH=$(curl -s "https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['price'])")
-          BTC_24H=$(curl -s "https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['priceChangePercent'])")
-          ETH_24H=$(curl -s "https://api.binance.com/api/v3/ticker/24hr?symbol=ETHUSDT" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['priceChangePercent'])")
+          RESPONSE=$(curl -s "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true")
+          echo "API response: $RESPONSE"
+
+          BTC=$(echo $RESPONSE | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['bitcoin']['usd'])")
+          ETH=$(echo $RESPONSE | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['ethereum']['usd'])")
+          BTC_24H=$(echo $RESPONSE | python3 -c "import sys,json; d=json.load(sys.stdin); print(round(d['bitcoin']['usd_24h_change'],2))")
+          ETH_24H=$(echo $RESPONSE | python3 -c "import sys,json; d=json.load(sys.stdin); print(round(d['ethereum']['usd_24h_change'],2))")
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
           cat > price.json << EOF
           {
             "updated_at": "$TIMESTAMP",
-            "source": "Binance",
+            "source": "CoinGecko",
             "prices": {
-              "BTCUSDT": {
-                "price": $BTC,
+              "BTC": {
+                "price_usd": $BTC,
                 "change_24h_pct": $BTC_24H
               },
-              "ETHUSDT": {
-                "price": $ETH,
+              "ETH": {
+                "price_usd": $ETH,
                 "change_24h_pct": $ETH_24H
               }
             }
           }
           EOF
+          cat price.json
 
       - name: Commit & push price.json
         run: |
