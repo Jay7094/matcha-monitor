@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-09T19:06:38Z",
+  "updated_at": "2026-08-09T19:49:21Z",
   "source": "CoinGecko",
   "prices": {
     "BTC": {
@@ -7,8 +7,8 @@
       "change_24h_pct": 0.25
     },
     "ETH": {
-      "price_usd": 1920.52,
-      "change_24h_pct": 0.04
+      "price_usd": 1921.14,
+      "change_24h_pct": 0.11
     }
   }
 }
