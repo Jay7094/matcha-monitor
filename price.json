@@ -1,14 +1,14 @@
 {
-  "updated_at": "2026-08-12T02:27:45Z",
+  "updated_at": "2026-08-12T04:24:04Z",
   "source": "CoinGecko",
   "prices": {
     "BTC": {
-      "price_usd": 63762,
-      "change_24h_pct": -0.38
+      "price_usd": 63788,
+      "change_24h_pct": -0.45
     },
     "ETH": {
-      "price_usd": 1882.74,
-      "change_24h_pct": 0.37
+      "price_usd": 1888.64,
+      "change_24h_pct": 0.54
     }
   }
 }
